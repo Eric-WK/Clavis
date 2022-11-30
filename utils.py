@@ -93,15 +93,15 @@ def download_button(object_to_download, download_filename:str, button_text:str, 
 
     return dl_link
 
-def open_json(fname: str) -> dict:
-        """Opens a json file and returns a dictionary"""
-        with open(fname) as f:
-            return json.load(f)
+# def open_json(fname: str) -> dict:
+#         """Opens a json file and returns a dictionary"""
+#         with open(fname) as f:
+#             return json.load(f)
 
-def remove_punctuation(text: str) -> str:
-        """Removes punctuation from a string"""
-        pattern = '[^A-Za-z0-9]+'
-        return re.sub(pattern, ' ', text).strip()
+# def remove_punctuation(text: str) -> str:
+#         """Removes punctuation from a string"""
+#         pattern = '[^A-Za-z0-9]+'
+#         return re.sub(pattern, ' ', text).strip()
 
 
 def check_text_valid(text: str) -> bool:

@@ -81,7 +81,7 @@ st.markdown("---")
 
 ## -- END OF CONFIGURATION -- ##
 expansions_col, clavis_col = st.columns(2)
-expand_keywords_button = expansions_col.button("Expand Keywords")
+expand_keywords_button = expansions_col.button("Search Volume / Expand Keywords")
 clavis_button = clavis_col.button("Run Clavis")
 
 

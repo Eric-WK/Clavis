@@ -183,9 +183,16 @@ if clavis_button:
                 st.session_state.parsed_search_volume, categorization_df
             )
             ## replace the 0's in Gender, Branded / Generic, Topic, Word Intent, Delete with ""
-            cols_to_replace_0s = ["Gender", "Branded / Generic", "Topic", "Word Intent"]
-            categorized_keywords[cols_to_replace_0s] = categorized_keywords[cols_to_replace_0s].replace("0","")
-
+            cols_to_replace_0s = [
+                "Gender",
+                "Branded / Generic",
+                "Topic",
+                "Word Intent",
+                "Delete",
+            ]
+            categorized_keywords[cols_to_replace_0s] = categorized_keywords[
+                cols_to_replace_0s
+            ].replace("0", "")
 
             ## add the categorized keywords to the session state
             st.session_state.categorised_keywords = categorized_keywords

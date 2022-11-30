@@ -108,53 +108,50 @@ if "clavis_end_result" not in st.session_state:
 
 ## -- Start of Expanding Keywords -- ##
 if expand_keywords_button:
+    if does_file_exist("sample_data/intermediate_results.csv"):
+        st.write("Intermediate results file already exists. Loading it for testing.")
+        ## load it and add it to the session state to bypass the search volume extraction
+        st.session_state.parsed_search_volume = pd.read_csv(
+            "sample_data/intermediate_results.csv"
+        )
     if keywords_file is None:
         # st.write("Please upload a keywords file.")
         st.error("ERROR: No keywords file uploaded.")
         st.info("INFO: Please upload a keywords file.")
     else:
-        ## load the keywords file
-        KEYWORDS_FILE = pd.read_csv(keywords_file)
-        ## define the payload
-        PAYLOAD = get_payload(KEYWORDS_FILE, LANGUAGE, EXPAND_KEYWORDS, GEOLOCATION)
-        ## run the search volume extractor
-        # time_limit = 60 * 1.5 ## 4 minutes
-        # tic = time.time()
-        ## with a time limit
-        with st.spinner("Expanding Keywords..."):
-            # while time.time() - tic < time_limit:
-            try:
-                search_volume = run_search_volume(**PAYLOAD)
-                parsed_search_volume, expansion_factor = parse_search_volume(
-                    search_volume, PAYLOAD
-                )
-                st.session_state.parsed_search_volume = parsed_search_volume
-                st.session_state.expansion_factor = expansion_factor
-                st.success("Keywords Expanded!")
-                # break
-            except Exception as e:
-                st.error(e)
-                # break
-        st.metric(
-            "Expansion Factor",
-            value=round(st.session_state["expansion_factor"], 2),
-            delta=0,
-            delta_color="normal",
-        )
-
-
-## make a new button for running clavis
-
+        if st.session_state_parsed_search_volume is None:
+            ## load the keywords file
+            KEYWORDS_FILE = pd.read_csv(keywords_file)
+            ## define the payload
+            PAYLOAD = get_payload(KEYWORDS_FILE, LANGUAGE, EXPAND_KEYWORDS, GEOLOCATION)
+            ## run the search volume extractor
+            # time_limit = 60 * 1.5 ## 4 minutes
+            # tic = time.time()
+            ## with a time limit
+            with st.spinner("Expanding Keywords..."):
+                # while time.time() - tic < time_limit:
+                try:
+                    search_volume = run_search_volume(**PAYLOAD)
+                    parsed_search_volume, _ = parse_search_volume(
+                        search_volume, PAYLOAD
+                    )
+                    st.session_state.parsed_search_volume = parsed_search_volume
+                    # st.session_state.expansion_factor = expansion_factor
+                    st.success("Keywords Expanded!")
+                    # break
+                except Exception as e:
+                    st.error(e)
+                    # break
+        # st.metric(
+        #     "Expansion Factor",
+        #     value=round(st.session_state["expansion_factor"], 2),
+        #     delta=0,
+        #     delta_color="normal",
+        # )
 
 ## -- End of Expanding Keywords -- ##
 ## -- Start of Categorizing Keywords -- ##
-# if st.session_state.parsed_search_volume is not None:
-#     ## load the config file
-#     # if config_file is None:
-#     #     st.write("Please upload a config file.")
-#         # st.warning("You need to upload a config file to run Clavis.")
-#     # else:
-#     ## make a new button for running clavis
+
 if clavis_button:
     if config_file is None:
         st.error("ERROR: No config file uploaded.")

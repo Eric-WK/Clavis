@@ -84,6 +84,12 @@ CLIENT_URL = st.text_input(
     "Enter the client URL",
     value="https://www.example.com/",
 )
+## concatenation stub for the final URLS (either hyphen (-) or underscore (_))
+CONCAT_STUB = st.text_input(
+    "Enter the concatenation stub",
+    value="-",
+    help = "Either hyphen (-) or underscore (_), ampersand or whichever is in line with the client's URL structure",
+)
 st.markdown("---")
 
 ## -- END OF CONFIGURATION -- ##
@@ -223,7 +229,7 @@ if clavis_button:
 
             # ## concatenate the columns
             generated_urls["url"] = generated_urls[columns_to_concatenate].apply(
-                lambda x: "-".join(x.dropna().astype(str)), axis=1
+                lambda x: f"{CONCAT_STUB}".join(x.dropna().astype(str)), axis=1
             )
 
             ## cleaning - remove the hyphen

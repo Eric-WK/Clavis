@@ -1,7 +1,7 @@
 import os
 from typing import Dict, Union, List
 import pandas as pd
-import numpy as np 
+import numpy as np
 
 ## HELPER FUNCTIONS
 
@@ -21,6 +21,28 @@ def get_payload(
         geo=geo,
         ideas=expand_keywords,
     )
+
+
+def parse_search_volume(
+    search_volume_result: Dict[str, int], payload: Dict[str, Union[List[str], str]]
+) -> pd.DataFrame:
+    """Runs the search volume extractor and parses the results"""
+    ## parse the results
+    results_df = (
+        pd.DataFrame.from_dict(
+            search_volume_result, orient="index", columns=["search_volume"]
+        )
+        .reset_index()
+        .rename(columns={"index": "keywords"})
+    )
+    ## add a column to the dataframe to label the keywords as "idea" or "not idea"
+    results_df["idea"] = np.where(
+        results_df["keywords"].isin(payload["keywords"]), "Expanded", "Original"
+    )
+    ## calculate the expansion factor
+    expansion_factor = len(results_df) / len(payload["keywords"])
+    ## return the results
+    return results_df, expansion_factor
 
 
 def load_excel_and_clean(
@@ -62,11 +84,17 @@ def clean_dataframe_for_categorization(df: pd.DataFrame, key_name: str) -> pd.Da
     df["Category"] = key_name
     return df
 
+
 ## define a function to apply clean_dataframe_for_categorization to a dictionary of dataframes
-def apply_clean_dataframe_for_categorization(categories_dict: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+def apply_clean_dataframe_for_categorization(
+    categories_dict: Dict[str, pd.DataFrame]
+) -> pd.DataFrame:
     """applies the clean_dataframe_for_categorization function to a dictionary of dataframes"""
-    ## dictionary of cleaned dataframes 
-    cleaned_dfs_dict = {x: clean_dataframe_for_categorization(categories_dict[x], x) for x in categories_dict.keys()}
+    ## dictionary of cleaned dataframes
+    cleaned_dfs_dict = {
+        x: clean_dataframe_for_categorization(categories_dict[x], x)
+        for x in categories_dict.keys()
+    }
     ## concatenate the dataframes
     return pd.concat(cleaned_dfs_dict.values(), axis=0)
 

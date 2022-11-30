@@ -5,19 +5,27 @@ import uuid
 import re
 import pandas as pd
 import streamlit as st
-## -- Functions -- ## 
 
-## function to reverse a dictionary 
-def reverse_dictionary(dictionary:dict) -> dict: 
+## -- Functions -- ##
+
+## function to reverse a dictionary
+def reverse_dictionary(dictionary: dict) -> dict:
     """Reverses the dictionary. {k:v} -> {v:k}"""
-    return {v:k for k,v in dictionary.items()}
+    return {v: k for k, v in dictionary.items()}
 
-## function to filter a list of strings by a specific value    
-def _filter_columns(column_list:list, filter:str) -> list:
+
+## function to filter a list of strings by a specific value
+def _filter_columns(column_list: list, filter: str) -> list:
     """Filters a list of columns by a filter string."""
     return [x for x in column_list if filter in x]
 
-def download_button(object_to_download, download_filename:str, button_text:str, pickle_it:bool = False):
+
+def download_button(
+    object_to_download,
+    download_filename: str,
+    button_text: str,
+    pickle_it: bool = False,
+):
     """
     Generates a link to download the given object_to_download.
     Params:
@@ -48,7 +56,9 @@ def download_button(object_to_download, download_filename:str, button_text:str, 
             pass
 
         elif isinstance(object_to_download, pd.DataFrame):
-            object_to_download = object_to_download.to_csv(index=False, compression='zip')
+            object_to_download = object_to_download.to_csv(
+                index=False, compression="zip"
+            )
 
         # Try JSON encode for everything else
         else:
@@ -61,8 +71,8 @@ def download_button(object_to_download, download_filename:str, button_text:str, 
     except AttributeError as e:
         b64 = base64.b64encode(object_to_download).decode()
 
-    button_uuid = str(uuid.uuid4()).replace('-', '')
-    button_id = re.sub('\d+', '', button_uuid)
+    button_uuid = str(uuid.uuid4()).replace("-", "")
+    button_id = re.sub("\d+", "", button_uuid)
 
     custom_css = f""" 
         <style>
@@ -89,14 +99,19 @@ def download_button(object_to_download, download_filename:str, button_text:str, 
                 }}
         </style> """
 
-    dl_link = custom_css + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
+    dl_link = (
+        custom_css
+        + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
+    )
 
     return dl_link
 
+
 def open_json(fname: str) -> dict:
-        """Opens a json file and returns a dictionary"""
-        with open(fname) as f:
-            return json.load(f)
+    """Opens a json file and returns a dictionary"""
+    with open(fname) as f:
+        return json.load(f)
+
 
 # def remove_punctuation(text: str) -> str:
 #         """Removes punctuation from a string"""
@@ -105,10 +120,11 @@ def open_json(fname: str) -> dict:
 
 
 def check_text_valid(text: str) -> bool:
-        """Checks if a string is valid or not"""
-        if text is not None and text != 0:
-            return True
-        else:
-            return False
+    """Checks if a string is valid or not"""
+    if text is not None and text != 0:
+        return True
+    else:
+        return False
+
 
 ## -- End Functions -- ##

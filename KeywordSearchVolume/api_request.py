@@ -1,10 +1,10 @@
 from .client import RestClient
-import streamlit as st 
+import streamlit as st
 
 # helpful modules
 def getKwInfo(q: str, language: str, geo: str) -> dict:
-    login = st.secrets['DB_USERNAME']
-    passw = st.secrets['DB_PASSWORD']
+    login = st.secrets["DB_USERNAME"]
+    passw = st.secrets["DB_PASSWORD"]
     client = RestClient(login, passw)
     post_data = dict()
     # simple way to set a task
@@ -27,8 +27,8 @@ def getKwInfo(q: str, language: str, geo: str) -> dict:
 
 
 def getKwIdea(q: str, language: str, geo: str) -> dict:
-    login = st.secrets['DB_USERNAME']
-    passw = st.secrets['DB_PASSWORD']
+    login = st.secrets["DB_USERNAME"]
+    passw = st.secrets["DB_PASSWORD"]
     client = RestClient(login, passw)
     post_data = dict()
     # simple way to set a task

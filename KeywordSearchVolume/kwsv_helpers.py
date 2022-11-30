@@ -34,6 +34,7 @@ def get_keywords_sv(keywords: list, language: str, geo: str):
 
     return outputKeywords
 
+
 ## TODO:: Define an expansion limit for the keywords, so that we can limit the number of keywords that we get from the API
 def get_keywords_ideas_sv(
     keywords: list, outputKeywords: list, language: str, geo: str

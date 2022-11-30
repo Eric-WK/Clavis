@@ -119,7 +119,7 @@ if expand_keywords_button:
         st.error("ERROR: No keywords file uploaded.")
         st.info("INFO: Please upload a keywords file.")
     else:
-        if st.session_state_parsed_search_volume is None:
+        if st.session_state.parsed_search_volume is None:
             ## load the keywords file
             KEYWORDS_FILE = pd.read_csv(keywords_file)
             ## define the payload

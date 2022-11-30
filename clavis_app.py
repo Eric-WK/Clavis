@@ -157,74 +157,83 @@ if clavis_button:
         st.error("ERROR: No config file uploaded.")
         st.info("INFO: Please upload a config file.")
     else:
-        ## load the clavis config file
-        clavis_config = load_excel_and_clean(config_file, SHEET_NAME)
+        with st.spinner("Running Clavis....."):
+            ## load the clavis config file
+            clavis_config = load_excel_and_clean(config_file, SHEET_NAME)
 
-        ## function to perform the above steps
-        separated_categories_dict = clean_categories_df(clavis_config)
+            ## function to perform the above steps
+            separated_categories_dict = clean_categories_df(clavis_config)
 
-        ## cleaned dataframe
-        cleaned_categories_df = apply_clean_dataframe_for_categorization(
-            separated_categories_dict
-        )
+            ## cleaned dataframe
+            cleaned_categories_df = apply_clean_dataframe_for_categorization(
+                separated_categories_dict
+            )
 
-        ## separate the URL generation from the categorization
-        url_generation_df = cleaned_categories_df[
-            cleaned_categories_df["Category"].str.contains("URL")
-        ]
+            ## separate the URL generation from the categorization
+            url_generation_df = cleaned_categories_df[
+                cleaned_categories_df["Category"].str.contains("URL")
+            ]
 
-        ## separate the categorization from the URL generation
-        categorization_df = cleaned_categories_df[
-            ~cleaned_categories_df["Category"].str.contains("URL")
-        ]
+            ## separate the categorization from the URL generation
+            categorization_df = cleaned_categories_df[
+                ~cleaned_categories_df["Category"].str.contains("URL")
+            ]
 
-        categorized_keywords = categorize_keywords(
-            st.session_state.parsed_search_volume, categorization_df
-        )
+            categorized_keywords = categorize_keywords(
+                st.session_state.parsed_search_volume, categorization_df
+            )
+            ## replace the 0's in Gender, Branded / Generic, Topic, Word Intent, Delete with ""
+            cols_to_replace_0s = ["Gender", "Branded / Generic", "Topic", "Word Intent"]
+            categorized_keywords[cols_to_replace_0s] = categorized_keywords[cols_to_replace_0s].replace("0","")
 
-        ## add the categorized keywords to the session state
-        st.session_state.categorised_keywords = categorized_keywords
 
-        ## now URL generation
-        generated_urls = categorize_keywords(
-            st.session_state.parsed_search_volume, url_generation_df
-        )
+            ## add the categorized keywords to the session state
+            st.session_state.categorised_keywords = categorized_keywords
 
-        ## get the columns that are not keywords, search volume, idea, or 0
-        columns_to_concatenate = generated_urls.columns[
-            ~generated_urls.columns.isin(["keywords", "search_volume", "idea"])
-        ]
+            ## now URL generation
+            generated_urls = categorize_keywords(
+                st.session_state.parsed_search_volume, url_generation_df
+            )
 
-        ## in all of the columns to concatenate, replace 0 with "", 0 is a str ("0")
-        generated_urls[columns_to_concatenate] = generated_urls[
-            columns_to_concatenate
-        ].replace("0", "")
+            ## get the columns that are not keywords, search volume, idea, or 0
+            columns_to_concatenate = generated_urls.columns[
+                ~generated_urls.columns.isin(["keywords", "search_volume", "idea"])
+            ]
 
-        # ## concatenate the columns
-        generated_urls["url"] = generated_urls[columns_to_concatenate].apply(
-            lambda x: "-".join(x.dropna().astype(str)), axis=1
-        )
+            ## in all of the columns to concatenate, replace 0 with "", 0 is a str ("0")
+            generated_urls[columns_to_concatenate] = generated_urls[
+                columns_to_concatenate
+            ].replace("0", "")
 
-        ## cleaning - remove the hyphen
-        generated_urls["url"] = generated_urls["url"].replace(
-            "-", "", regex=True, inplace=False
-        )
+            generated_urls[columns_to_concatenate] = generated_urls[
+                columns_to_concatenate
+            ].replace("&", "")
 
-        ## replace the ampersand & with ""
-        generated_urls["url"] = generated_urls["url"].replace(
-            "&", "", regex=True, inplace=False
-        )
+            # ## concatenate the columns
+            generated_urls["url"] = generated_urls[columns_to_concatenate].apply(
+                lambda x: "-".join(x.dropna().astype(str)), axis=1
+            )
 
-        ## join back the two dataframes
-        final_df = pd.merge(
-            categorized_keywords,
-            generated_urls,
-            on=["keywords", "search_volume", "idea"],
-            how="left",
-        )
-        ## add the final df to the session state
-        st.session_state.clavis_end_result = final_df
-        st.success("Clavis Complete!")
+            ## cleaning - remove the hyphen
+            generated_urls["url"] = generated_urls["url"].replace(
+                "-", "", regex=True, inplace=False
+            )
+
+            ## replace the ampersand & with ""
+            generated_urls["url"] = generated_urls["url"].replace(
+                "&", "", regex=True, inplace=False
+            )
+            ## replace the 0's in the categorized_keywords with ""
+            ## join back the two dataframes
+            final_df = pd.merge(
+                categorized_keywords,
+                generated_urls,
+                on=["keywords", "search_volume", "idea"],
+                how="left",
+            )
+            ## add the final df to the session state
+            st.session_state.clavis_end_result = final_df
+            st.success("Clavis Complete!")
 
 ## -- End of Categorizing Keywords -- ##
 ## -- Start of Downloading the Results -- ##

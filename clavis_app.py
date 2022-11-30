@@ -79,6 +79,11 @@ SHEET_NAME = st.text_input(
     "Enter the sheet name of the Clavis config file",
     value="Config - Categorisation",
 )
+## client URL to concatenate with the final URLS 
+CLIENT_URL = st.text_input(
+    "Enter the client URL",
+    value="https://www.example.com/",
+)
 st.markdown("---")
 
 ## -- END OF CONFIGURATION -- ##
@@ -238,6 +243,8 @@ if clavis_button:
                 on=["keywords", "search_volume", "idea"],
                 how="left",
             )
+            ## concatenate the final URL with the base URL from the client 
+            final_df["final_url"] = CLIENT_URL + final_df["url"]
             ## add the final df to the session state
             st.session_state.clavis_end_result = final_df
             st.success("Clavis Complete!")

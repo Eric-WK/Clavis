@@ -269,6 +269,16 @@ if clavis_button:
             st.session_state.clavis_end_result = final_df
             st.success("Clavis Complete!")
 
+## add a button to visualize the results of the search volume 
+if st.session_state.parsed_search_volume is not None:
+    if st.button("View Search Volume Results"):
+        st.dataframe(st.session_state.parsed_search_volume)
+
+## after running clavis, we want to see the number of keywords that were categorized
+if st.session_state.clavis_end_result is not None:
+    if st.button("View Clavis Results"):
+        st.dataframe(st.session_state.clavis_end_result)
+
 ## -- End of Categorizing Keywords -- ##
 ## -- Start of Downloading the Results -- ##
 if st.session_state.clavis_end_result is not None:

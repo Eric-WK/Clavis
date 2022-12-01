@@ -45,6 +45,9 @@ config_file = config_col.file_uploader("Upload your config file", type=["xlsx", 
 keywords_file = keywords_col.file_uploader(
     "Upload your keywords file", type=["xlsx", "xls", "csv"]
 )
+## add a radio button for demo mode: On or Off 
+demo_mode = st.radio("Demo Mode", ("On", "Off"))
+
 
 st.markdown("---")
 
@@ -116,15 +119,23 @@ if "expansion_factor" not in st.session_state:
 if "clavis_end_result" not in st.session_state:
     st.session_state.clavis_end_result = None
 
+if demo_mode == "On":
+    st.write("Demo mode is on. You can only run the tool with the demo keywords.")
+    keywords_file = "./sample_data/keywords.csv"
+    config_file = "./sample_data/Keyword-Categorization-Mapping-Config.xlsx"
+    ## load the intermediate results file
+    st.session_state.parsed_search_volume = pd.read_csv(
+            "sample_data/intermediate_results.csv"
+        )
 
 ## -- Start of Expanding Keywords -- ##
 if expand_keywords_button:
-    if does_file_exist("sample_data/intermediate_results.csv"):
-        st.write("Intermediate results file already exists. Loading it for testing.")
-        ## load it and add it to the session state to bypass the search volume extraction
-        st.session_state.parsed_search_volume = pd.read_csv(
-            "sample_data/intermediate_results.csv"
-        )
+    # if does_file_exist("sample_data/intermediate_results.csv"):
+    #     st.write("Intermediate results file already exists. Loading it for testing.")
+    #     ## load it and add it to the session state to bypass the search volume extraction
+    #     st.session_state.parsed_search_volume = pd.read_csv(
+    #         "sample_data/intermediate_results.csv"
+    #     )
     if keywords_file is None:
         # st.write("Please upload a keywords file.")
         st.error("ERROR: No keywords file uploaded.")
@@ -153,6 +164,9 @@ if expand_keywords_button:
                 except Exception as e:
                     st.error(e)
                     # break
+        else:
+            st.success("Intermediate results file loaded.")
+            st.write("You can now run Clavis.")
         # st.metric(
         #     "Expansion Factor",
         #     value=round(st.session_state["expansion_factor"], 2),
